@@ -76,6 +76,10 @@ Där <windows-användare> är användarnamnet på datorn, tex melste. Därefter 
 
 ```sudo mount -a```
 
+### Kladd ###
+
+Nu kan man göra ```pip install -r requirements.txt``` istället för att installera paketen individuellt, efter att man laddat hem projektet från Github då.  
+
 klart!
 #### Genomgång av skriptet
 Skriptet går att finna här.
