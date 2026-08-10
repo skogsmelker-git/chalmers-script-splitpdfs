@@ -78,7 +78,7 @@ Där <windows-användare> är användarnamnet på datorn, tex melste. Därefter 
 
 ### Kladd ###
 
-Nu kan man göra ```python.exe -m pip install -r requirements.txt``` istället för att installera paketen individuellt, efter att man laddat hem projektet från Github då. Först måste man dock installera pip genom att köra "python.exe -m ensurepip --upgrade"
+Nu kan man göra ```python.exe -m pip install -r requirements.txt``` istället för att installera paketen individuellt, efter att man laddat hem projektet från Github då. Först måste man dock installera pip genom att köra ```python.exe -m ensurepip --upgrade```
 
 klart!
 #### Genomgång av skriptet
