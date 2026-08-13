@@ -48,6 +48,76 @@ START_PAGE_DEGREE_MARKERS = [
     "MASTEREXAMEN",
     "KANDIDATEXAMEN",
     "HÖGSKOLEEXAMEN",
+
+    # Engineer / maritime programmes from F1A
+
+    # Bygg
+    "BYGGINGENJÖR",
+    "BYGGINGENJÖRSEXAMEN",
+    "BYGGINGENJÖRSLINJEN",
+    "BYGGNADSINGENJÖR",
+    "BYGGNADSINGENJÖRSEXAMEN",
+    "BYGGNADSINGENJÖRSLINJEN",
+
+    # Elektro
+    "ELEKTROINGENJÖR",
+    "ELEKTROINGENJÖRSEXAMEN",
+    "ELEKTROINGENJÖRSLINJEN",
+
+    # Kemi / Transport
+    "KEMIINGENJÖR",
+    "KEMIINGENJÖRSEXAMEN",
+    "KEMIINGENJÖRSLINJEN",
+    "TRANSPORTINGENJÖR",
+    "TRANSPORTINGENJÖRSEXAMEN",
+        "TRANSPORTINGENJÖRSLINJEN",
+
+    # Maskin
+    "MASKININGENJÖR",
+    "MASKININGENJÖRSEXAMEN",
+    "MASKININGENJÖRSLINJEN",
+
+    # Drift
+    "DRIFTINGENJÖR",
+    "DRIFTINGENJÖRSEXAMEN",
+    "DRIFTINGENJÖRSLINJEN",
+    "DRIFTTEKNIKER",
+    "DRIFTTEKNIKEREXAMEN",
+    "DRIFTTEKNIKERLINJEN",
+
+    # Sjöfart
+    "SJÖKAPTEN",
+    "SJÖKAPTENSEXAMEN",
+    "SJÖKAPTENSLINJEN",
+
+    "SJÖINGENJÖR",
+    "SJÖINGENJÖRSEXAMEN",
+    "SJÖINGENJÖRSLINJEN",
+
+    "STYRMAN",
+    "STYRMANSEXAMEN",
+    "STYRMANSLINJEN",
+
+    "SKEPPARE",
+    "SKEPPAREXAMEN",
+    "SKEPPARELINJEN",
+
+    # YTH
+    "YTH",
+    "YTH-BYGGNADSTEKNIK",
+    "BYGGNADSTEKNIK",
+    "BYGGNADSTEKNIKEXAMEN",
+    "BYGGNADSTEKNIKLINJEN",
+
+    # Tekniker
+    "MASKINTEKNIKER",
+    "MASKINTEKNIKEREXAMEN",
+    "MASKINTEKNIKERLINJEN",
+
+    # Generic fallbacks
+    "INGENJÖRSEXAMEN",
+    "INGENJÖRSLINJEN",
+    "UNIVERSITY CERTIFICATE IN CIVIL ENGINEERING",
 ]
 
 # Weak/secondary indicators. These are not enough on their own because they can
@@ -159,8 +229,8 @@ def contains_personnummer(text):
     patterns = [
         r"\b\d{8}[-+]\d{4}\b",          # xxxxxxxx-xxxx
         r"\b\d{6}[-+]\d{4}\b",          # xxxxxx-xxxx
-        r"\b\d{4}-\d{2}-\d{2}\b",       # yyyy-mm-dd
-        r"\b\d{4}-\d{4}\b",             # yyyy-mmdd
+       # r"\b\d{4}-\d{2}-\d{2}\b",       # yyyy-mm-dd
+       # r"\b\d{4}-\d{4}\b",             # yyyy-mmdd
         r"\b\d{6}-?T\d{3}\b",           # xxxxxx-Txxx or xxxxxxTxxx
         r"\b\d{8}-?T\d{3}\b",           # xxxxxxxx-Txxx or xxxxxxxxTxxx
         r"\b\d{6}-?R\d{3}\b",           # xxxxxx-Rxxx   
@@ -260,20 +330,30 @@ def has_non_start_page_indicators(text, config):
 
 def has_page_one_footer(text):
     """
-    Detects footer/page numbering that restarts at page 1.
-    OCR sometimes reads '1 (6)' as 'I (6)', so both are accepted.
+    Detects page-one footers with OCR noise.
+    Handles:
+    - Sid 1 av 4
+    - Sid I av 4
+    - Sid I av Page I of
+    - Page 1 of 4
+    - Page I of
+    - Page L of
     """
     if not text:
         return False
 
     lines = [line.strip().upper() for line in text.splitlines() if line.strip()]
-    bottom_lines = lines[-8:] if lines else []
+    bottom_lines = lines[-10:] if lines else []
     bottom_text = " ".join(bottom_lines)
 
+    bottom_text = bottom_text.replace("Ⅰ", "I")
+    bottom_text = re.sub(r"\s+", " ", bottom_text)
+
     footer_patterns = [
-        r"(?:^|\s)[1I]\s*\(\s*\d+",  # 1 (6), I (6), 1(6)
-        r"(?:^|\s)PAGE\s+[1I]\s*(?:OF|/)\s*\d+",   # Page 1 of 6
-        r"(?:^|\s)SIDA\s+[1I]\s*(?:AV|/)\s*\d+",   # Sida 1 av 6
+        r"(?:^|\s)SID\s*[1IL]\s*(?:AV|/)?\s*\d*",
+        r"(?:^|\s)SIDA\s*[1IL]\s*(?:AV|/)?\s*\d*",
+        r"(?:^|\s)PAGE\s*[1IL]\s*(?:OF|/)?\s*\d*",
+        r"(?:^|\s)[1IL]\s*(?:AV|OF|/)\s*\d*",
     ]
 
     return any(re.search(pattern, bottom_text) for pattern in footer_patterns)
@@ -378,6 +458,10 @@ def is_start_page(text, config):
             "OFFICER OF DEGREE",
             "ON BEHALF OF THE PRESIDENT",
             "PÅ REKTORS VÄGNAR",
+
+            "REKTOR",
+            "ADM ASSISTENT",
+            "ADM ASS",
         ]
     )
 
@@ -441,6 +525,15 @@ def extract_personnummer_candidates(text):
     # -------------------------
     # HIGH PRIORITY
     # -------------------------
+
+    # YYYY-MM-DD-XXXX
+    for m in re.findall(
+            r"\d{4}-\d{2}-\d{2}-\d{4}",
+            normalized
+    ):
+        y, mo, d, tail = m.split("-")
+        high.append(f"{y[2:]}{mo}{d}-{tail}")
+
     high.extend(re.findall(r"\d{6}-\d{4}", normalized))
     high.extend(re.findall(r"\d{6}-T\d{3}", normalized))
 
