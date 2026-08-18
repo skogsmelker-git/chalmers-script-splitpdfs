@@ -21,7 +21,12 @@ För att använda bearbetningsskriptet gör man i nuläget följande i WSL:
 
 ```Python3 bearbetningsskript.py input/ output/```
 
-men vi har tänkt att skapa executable filer så att man inte behöver skriva skriptet varje gång. Detta minskar också risken att något går snett
+Eller via gränssnittet via:
+
+
+```Python3 gränssnitt.py ```
+Gränssnittet aktiverar bara skriptet åt en men man kan också lägga till fler markörer däri så det finns lite mer funktionalitet om man använder gränssnittet.
+
 
 ### Workflow
 1. Ta ut alla bevisen ur fasciklarna, låt bilagor ligga kvar.
@@ -34,12 +39,15 @@ men vi har tänkt att skapa executable filer så att man inte behöver skriva sk
 Klart! 
 
 ### Dokumentation
-Här beskriver vi hur vi har tänkt
 Installation
 Det krävs några olika verktyg för att få detta att fungera, dessa är:
-- WSL (Windows Subsystem for Linux)
-- OCRmyPDF
-- Python3
+-	[WSL]([url](https://learn.microsoft.com/en-us/windows/wsl/install)) (Windows Subsystem for Linux) – tillåter en begränsad Linuxmiljö i Windows som vi behöver för att använda OCRmyPDF. 
+-	[OCRmyPDF]([url](https://github.com/ocrmypdf/OCRmyPDF)) – OCRverktyg, installeras i WSL. 
+-	[Python 3]([url](https://www.python.org/downloads/windows/)) – använd den senaste 64-bit versionen. 
+Andra verktyg vi använt är:
+-	[VeraPDF]([url](https://docs.verapdf.org/install/)) (för PDF/A-2u granskning och verifiering, det är Greenfield vi använder)
+-	[Java]([url](https://www.java.com/en/download/)) – VeraPDF behöver java
+-	[PDFtoPDFa]([url](https://github.com/iRedPaul/pdftopdfa/blob/main/docs/usage.md)) – konvertera pdf till pdf/a2u
 
 #### Installera WSL
 För att installera WSL gör vi följande. Vi har valt Debian för att göra det så enkelt som möjligt. 
@@ -76,23 +84,5 @@ Där <windows-användare> är användarnamnet på datorn, tex melste. Därefter 
 
 ```sudo mount -a```
 
-### Kladd ###
-
 Nu kan man göra ```python.exe -m pip install -r requirements.txt``` istället för att installera paketen individuellt, efter att man laddat hem projektet från Github då. Först måste man dock installera pip genom att köra ```python.exe -m ensurepip --upgrade```
 
-klart!
-#### Genomgång av skriptet
-Skriptet går att finna här.
-#### Problem och förbättringar
-- Vet inte om man kan komma åt filareorna genom WSL eftersom det är Microsofts egna nätverksdiskar…
-- Det kan finnas fler variationer på personnummer eller bevisformat vi inte tänkt på, men dessa borde vi hitta i log-filerna
-- Vi måste komma ihåg att konvertera allt till pdf/a2u
-- Hittar den personnumer i formatet xxxxxx-Rxxx? Det finns ett exempel på ett sådant i volym 2016 860301-860829.
-- Det skulle vara bra att införa någon ”alert” så att den varnar om ett bevis består av många sidor (kke 10+) så att man enkelt kan kolla om det blev något fel
-- Vi kan göra ett valideringsskript som bara kollar om det förekommer flera personnummer i samma dokument, kan också rapportera om filen är över 10 sidor eller något sånt.
-
-
-#### Referenser
-- How to install Linux on Windows with WSL, Microsoft. (Länk)
-- Cookbook – Basic examples, OCRmyPDF. (Länk)
-- Installing additional language packs, OCRmyPDF. (Länk)
